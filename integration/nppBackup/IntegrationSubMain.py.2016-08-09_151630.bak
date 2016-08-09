@@ -1,6 +1,6 @@
 from nve import nve
 from tempRescale import tempRescale
 
-class simulation(object):
+def simulation():
 	nve()
 	

@@ -1,0 +1,9 @@
+from atom import ArAtom
+
+class Atoms(ArAtom):	
+	def __init__(self,numAtoms):
+	for i in range(0,self.numAtoms):
+            self.atoms.append(ArAtom())
+		
+	def passAtom(self):
+		self.atoms
