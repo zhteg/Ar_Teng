@@ -1,0 +1,30 @@
+from atom import ArAtom as Atom
+#import globalVariables
+
+import math
+
+class Atoms(Atom):
+	atoms = []
+	def __init__(self,numAtoms):
+	"""initialize atom list by numAtoms"""
+		self.numAtoms=numAtoms
+		for i in range(0,self.numAtoms):
+			self.atoms.append(Atom())
+		
+	def passAtom(self):
+	"""return atom list"""
+		return self.atoms
+		
+	def assignPositions(self):
+        """Place atoms randomly in the box."""
+        n = int(math.ceil(self.numAtoms**(1.0/3))) # atomNumber in one direction
+        i = 0 # Particles placed so far
+        
+        for x in range(0, n):
+            for y in range(0, n):
+                for z in range(0, n):
+                    if (i < self.numAtoms):
+                        self.atoms[i].x = x * self.sigma
+                        self.atoms[i].y = y * self.sigma             
+                        self.atoms[i].z = z * self.sigma
+                        i += 1
