@@ -1,5 +1,6 @@
 from  simulationSettings import*
 from tempRescale import tempRescale
+import math
 
 class Simulation(object):
 
@@ -31,8 +32,23 @@ class Simulation(object):
             atom.vy += 0.5*(atom.fy/mass)*dt
             atom.vz += 0.5*(atom.fz/mass)*dt  
 
-            
 
+    def velocityRescale(self,Temp):
+        """rescale the velocities to the target temperature"""
+        self.momentumCorrection()
+        scalingFactor=math.sqrt(Temp/self.temperature())
+        for atom in self.atoms:
+            atom.vx*=scalingFactor
+            atom.vy*=scalingFactor
+            atom.vz*=scalingFactor
+
+    def nvt(self,tempMethod,temp,relaxation,tempBound,timestepID):
+        """tempMethod: velocityRescale; relaxation: timestep interval to perform Temperature"""
+        self.nve()
+        if timestepID % relaxation==0 or math.fabs(self.temperature()-temp) > tempBound:
+            tempMethod(temp)
+        
+        
         
 
         

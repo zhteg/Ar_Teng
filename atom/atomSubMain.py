@@ -9,6 +9,7 @@ class Atoms(Atom,Simulation):
     atoms = []
     numAtoms=0
     KE, KE_flag=0.0, 1
+    PE=0
     def __init__(self,numAtoms):
         """initialize atom list by numAtoms"""
         self.numAtoms=numAtoms
@@ -24,6 +25,7 @@ class Atoms(Atom,Simulation):
     def assignPositions(self):
         """Place atoms by sigma (simulation setting) in the box."""
         global sigma
+
         n = int(math.ceil(self.numAtoms**(1.0/3))) # atomNum in one direction
         i = 0 # Particles placed so far
         for x in range(0, n):
@@ -58,6 +60,7 @@ class Atoms(Atom,Simulation):
     
     def momentumCorrection(self):
         """ momentum --> 0"""
+        self.KE_flag=1
         vSum, vAve=[0.0]*3, [0.0]*3
         for atom in self.atoms:
             vSum[0] += atom.vx
@@ -133,4 +136,11 @@ class Atoms(Atom,Simulation):
             atom.fx = 0
             atom.fy = 0
             atom.fz = 0
-            atom.pot = 0
+            atom.potential = 0
+
+    def potentialEnergy(self):
+        """update KE if KE_flag !=0 (needs updated)"""
+        self.PE=0
+        for atom in self.atoms:
+            self.PE+=atom.potential
+        return self.PE

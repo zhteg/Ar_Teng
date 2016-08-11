@@ -1,2 +1,0 @@
-def tempRescale():
-	print "rescale"
