@@ -8,4 +8,6 @@ cutOff = 2.25*sigma
 mass = (39.95/N_A)*(10**-3) # [Kg] mass of a single atom; 39 --> Ar
 boxSize = 10.229*sigma
 
+dt=1e-14 # [s] Timestep
+
 

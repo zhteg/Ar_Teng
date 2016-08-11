@@ -1,10 +1,11 @@
 from atom import ArAtom as Atom
+from integration.IntegrationSubMain import Simulation
 import random 
 from  simulationSettings import*
 
 import math
 
-class Atoms(Atom):
+class Atoms(Atom,Simulation):
     atoms = []
     numAtoms=0
     KE, KE_flag=0.0, 1
@@ -87,16 +88,18 @@ class Atoms(Atom):
     def calculateForce(self, atom1, atom2):
         """Calculates the force between two atoms using LJ 12-6 potential"""
         global sigma, epsilon,cutOff, boxSize
+   
         # Calculate distance between two atoms
         dx = self.atoms[atom1].x - self.atoms[atom2].x
         dy = self.atoms[atom1].y - self.atoms[atom2].y
         dz = self.atoms[atom1].z - self.atoms[atom2].z
-        
+        #print dx,dy,dz
         # Minimum Image Convention
         dx -= boxSize*round(dx/boxSize)
         dy -= boxSize*round(dy/boxSize)
         dz -= boxSize*round(dz/boxSize)
-        
+        #print "New",dx,dy,dz
+
         r2 = dx*dx + dy*dy + dz*dz
 
         if r2 < cutOff:
@@ -107,18 +110,27 @@ class Atoms(Atom):
             
             # Update forces
             self.atoms[atom1].fx += force*dx
-            self.atoms[atom2].fx -= self.atoms[atom1].fx
+            self.atoms[atom2].fx -= force*dx
             self.atoms[atom1].fy += force*dy
-            self.atoms[atom2].fy -= self.atoms[atom1].fy
+            self.atoms[atom2].fy -= force*dy
             self.atoms[atom1].fz += force*dz
-            self.atoms[atom2].fz -= self.atoms[atom1].fz
+            self.atoms[atom2].fz -= force*dz
             
             # Update potentials
             self.atoms[atom1].potential += pot/2.0
-            self.atoms[atom2].potential += self.atoms[atom1].potential
+            self.atoms[atom2].potential += pot/2.0
             
     def updateForces(self):
         """Calculates the net potential on each atom, applying a cutoff radius"""
+        self.resetForces()
         for atom1 in range(0, self.numAtoms-1):
             for atom2 in range(atom1+1, self.numAtoms):
                 self.calculateForce(atom1, atom2)
+                
+    def resetForces(self):
+        """Sets all forces to zero"""
+        for atom in self.atoms:
+            atom.fx = 0
+            atom.fy = 0
+            atom.fz = 0
+            atom.pot = 0
