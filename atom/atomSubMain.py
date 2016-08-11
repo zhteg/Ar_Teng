@@ -83,4 +83,42 @@ class Atoms(Atom):
         if self.KE_flag:
             self.kineticEnergy()
         return self.KE/self.numAtoms/1.5/kb
+        
+    def calculateForce(self, atom1, atom2):
+        """Calculates the force between two atoms using LJ 12-6 potential"""
+        global sigma, epsilon,cutOff, boxSize
+        # Calculate distance between two atoms
+        dx = self.atoms[atom1].x - self.atoms[atom2].x
+        dy = self.atoms[atom1].y - self.atoms[atom2].y
+        dz = self.atoms[atom1].z - self.atoms[atom2].z
+        
+        # Minimum Image Convention
+        dx -= boxSize*round(dx/boxSize)
+        dy -= boxSize*round(dy/boxSize)
+        dz -= boxSize*round(dz/boxSize)
+        
+        r2 = dx*dx + dy*dy + dz*dz
+
+        if r2 < cutOff:
+            fr2 = (sigma**2)/r2
+            fr6 = fr2**3
+            force = 48*epsilon*fr6*(fr6 - 0.5)/r2
+            pot = 4*epsilon*fr6*(fr6 - 1)
             
+            # Update forces
+            self.atoms[atom1].fx += force*dx
+            self.atoms[atom2].fx -= self.atoms[atom1].fx
+            self.atoms[atom1].fy += force*dy
+            self.atoms[atom2].fy -= self.atoms[atom1].fy
+            self.atoms[atom1].fz += force*dz
+            self.atoms[atom2].fz -= self.atoms[atom1].fz
+            
+            # Update potentials
+            self.atoms[atom1].potential += pot/2.0
+            self.atoms[atom2].potential += self.atoms[atom1].potential
+            
+    def updateForces(self):
+        """Calculates the net potential on each atom, applying a cutoff radius"""
+        for atom1 in range(0, self.numAtoms-1):
+            for atom2 in range(atom1+1, self.numAtoms):
+                self.calculateForce(atom1, atom2)

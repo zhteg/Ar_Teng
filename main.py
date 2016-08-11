@@ -9,14 +9,17 @@ from integration.IntegrationSubMain import simulation
 
 numAtoms = 864 # Number of atoms to simulate
 nSteps=10 # Number of steps to simulate
+targetTemp=50 # K
 
-atoms=Atoms(numAtoms)
-atoms.applyGaussian(50)
+atoms=Atoms(numAtoms) # adding atoms by sigma distance
+atoms.applyGaussian(targetTemp)
 atoms.momentumCorrection()
 atoms.kineticEnergy()
 print "Temperature=",atoms.temperature()
-#print atoms.atoms[100].x,atoms.atoms[8].y,atoms.atoms[8].z
 
+atoms.updateForces()
+i=366
+print atoms.atoms[i].fx,atoms.atoms[i].fy,atoms.atoms[i].fz
 for step in range(0, nSteps):
     # Run the simulation for a single step
     simulation()
