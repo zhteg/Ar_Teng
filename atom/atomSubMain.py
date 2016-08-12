@@ -1,13 +1,16 @@
+from  simulationSettings import*
 from atom import ArAtom as Atom
 from integration.IntegrationSubMain import Simulation
+from analysis.analysisSubMain import Analysis
 import random 
-from  simulationSettings import*
+
 
 import math
 
-class Atoms(Atom,Simulation):
+class Atoms(Atom,Simulation, Analysis):
     atoms = []
     numAtoms=0
+    timestepID=0
     KE, KE_flag=0.0, 1
     PE=0
     def __init__(self,numAtoms):
@@ -17,6 +20,7 @@ class Atoms(Atom,Simulation):
             self.atoms.append(Atom())
         self.assignPositions() # assign atom positions
         print "total %i atoms placed by %2.3f angstroms" % (self.numAtoms, sigma*10**10)
+        Analysis.__init__(self)
 		
     def passAtom(self):
         """return atom list"""

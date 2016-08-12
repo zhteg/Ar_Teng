@@ -6,6 +6,7 @@ class Simulation(object):
     def nve(self):
         global mass, dt,boxSize
         self.KE_flag=1
+        self.timestepID+=1
         for atom in self.atoms:
             # Update positions
             newX = atom.x + atom.vx*dt+0.5*(atom.fx/mass)*dt**2
@@ -41,10 +42,10 @@ class Simulation(object):
             atom.vy*=scalingFactor
             atom.vz*=scalingFactor
 
-    def nvt(self,tempMethod,temp,relaxation,tempBound,timestepID):
+    def nvt(self,tempMethod,temp,relaxation,tempBound):
         """tempMethod: velocityRescale; relaxation: timestep interval to perform Temperature"""
         self.nve()
-        if timestepID % relaxation==0 or math.fabs(self.temperature()-temp) > tempBound:
+        if self.timestepID % relaxation==0 or math.fabs(self.temperature()-temp) > tempBound:
             tempMethod(temp)
         
         
