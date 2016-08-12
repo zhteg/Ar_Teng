@@ -1,5 +1,4 @@
 from  simulationSettings import*
-from tempRescale import tempRescale
 import math
 
 class Simulation(object):

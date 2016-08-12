@@ -10,7 +10,8 @@ from integration.IntegrationSubMain import Simulation
 numAtoms = 864 # Number of atoms to simulate
 nSteps=1000 # Number of steps to simulate
 targetTemp=90 # K
-nvtLength, nvtRelaxation, tempBound =200, 30, 10
+# steps for NVT, do temp rescale every "nvtRelaxation" step or when temp deviates above "tempBound" 
+nvtLength, nvtRelaxation, tempBound =200, 30, 10 
 
 fwlog=open("log.txt","w",0)
 fwlog.write( "timestepID Temp \t\tPE \t\t\tKE \n" )
