@@ -9,6 +9,7 @@ import math
 
 class Atoms(Atom,Simulation, Analysis):
     atoms = []
+    atoms0=[]
     numAtoms=0
     timestepID=0
     KE, KE_flag=0.0, 1
