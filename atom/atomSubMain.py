@@ -20,6 +20,7 @@ class Atoms(Atom,Simulation, Analysis):
             self.atoms.append(Atom())
         self.assignPositions() # assign atom positions
         print "total %i atoms placed by %2.3f angstroms" % (self.numAtoms, sigma*10**10)
+        self.updateForces()
         Analysis.__init__(self)
 		
     def passAtom(self):
@@ -60,8 +61,12 @@ class Atoms(Atom,Simulation, Analysis):
         for atom in range(0, self.numAtoms):
             self.atoms[atom].vx = normDist[atom*3]
             self.atoms[atom].vy = normDist[atom*3+1]
-            self.atoms[atom].vz = normDist[atom*3+2]      
-    
+            self.atoms[atom].vz = normDist[atom*3+2]   
+            
+        self.momentumCorrection()
+        self.kineticEnergy()
+        print "Temperature=",self.temperature()
+        
     def momentumCorrection(self):
         """ momentum --> 0"""
         self.KE_flag=1

@@ -6,38 +6,30 @@ Created on Tue Aug 09 19:08:08 2016
 """
 from atom.atomSubMain import Atoms
 from integration.IntegrationSubMain import Simulation
+from numpy import inf
 
 numAtoms = 864 # Number of atoms to simulate
 targetTemp=90 # K
-eSteps,pStep=300， 500# Number of steps to equilibrate and produce data
+nvtLength, eSteps,pStep=200, 100, 500# Number of steps to equilibrate and produce data
 # steps for NVT, do temp rescale every "nvtRelaxation" step or when temp deviates above "tempBound" 
-nvtLength, nvtRelaxation, tempBound =200, 30, 10 
-
-logFreq=5
+nvtRelaxation, tempBound = 30, 10 
+logFreq,xyzFreq=5, 5 # Output Frequency for log.txt and vmd.xyz
 
 """initialization: add atom, create velocity, force update"""
 atoms=Atoms(numAtoms) # adding atoms by sigma distance
 atoms.applyGaussian(targetTemp) # assign initial velocity
-atoms.momentumCorrection()
-atoms.kineticEnergy()
-print "Temperature=",atoms.temperature()
-atoms.updateForces()
 
-"""NVT equaliriate structures"""
+
+"""NVT equilibrate structures"""
 for timestepID in range(0, nvtLength):
-    atoms.nvt(atoms.velocityRescale,targetTemp,nvtRelaxation,tempBound)
-    atoms.dump2log(5)
-    atoms.dump2vmd(5)
-    #print timestepID
+    atoms.nvt(atoms.velocityRescale,targetTemp,nvtRelaxation,tempBound,logFreq,xyzFreq)
 
-"""NVE production run"""
+"""NVE furthuer quilibrium"""
 for timestepID in range(0, eSteps):
-    atoms.nve()
-    atoms.dump2log(5)
-    atoms.dump2vmd(5)
-    
-for timestepID in range(0, eSteps):
-    atoms.nve()
-    atoms.dump2log(5)
-    atoms.dump2vmd(5)
+    atoms.nve(logFreq,xyzFreq)
+
+"""NVE production run"""    
+for timestepID in range(0, pStep):
+    atoms.nve(logFreq,xyzFreq)
+    atoms.pairDistributionFunction(250,0.02,5)
     

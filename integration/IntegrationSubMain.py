@@ -1,9 +1,10 @@
 from  simulationSettings import*
 import math
+from numpy import inf
 
 class Simulation(object):
 
-    def nve(self):
+    def nve(self,logFreq,xyzFreq):
         global mass, dt,boxSize
         self.KE_flag=1
         self.timestepID+=1
@@ -31,7 +32,8 @@ class Simulation(object):
             atom.vx += 0.5*(atom.fx/mass)*dt
             atom.vy += 0.5*(atom.fy/mass)*dt
             atom.vz += 0.5*(atom.fz/mass)*dt  
-
+        self.dump2log(logFreq)
+        self.dump2vmd(xyzFreq)
 
     def velocityRescale(self,Temp):
         """rescale the velocities to the target temperature"""
@@ -42,9 +44,9 @@ class Simulation(object):
             atom.vy*=scalingFactor
             atom.vz*=scalingFactor
 
-    def nvt(self,tempMethod,temp,relaxation,tempBound):
+    def nvt(self,tempMethod,temp,relaxation,tempBound,logFreq,xyzFreq):
         """tempMethod: velocityRescale; relaxation: timestep interval to perform Temperature"""
-        self.nve()
+        self.nve(logFreq,xyzFreq)
         if self.timestepID % relaxation==0 or math.fabs(self.temperature()-temp) > tempBound:
             tempMethod(temp)
         
