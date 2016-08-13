@@ -14,6 +14,7 @@ class Atoms(Atom,Simulation, Analysis):
     timestepID=0
     KE, KE_flag=0.0, 1
     PE=0
+    autoVindex=0
     def __init__(self,numAtoms):
         """initialize atom list by numAtoms"""
         self.numAtoms=numAtoms

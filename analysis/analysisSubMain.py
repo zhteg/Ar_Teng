@@ -5,11 +5,11 @@ from copy import deepcopy
 
 class Analysis(object):
     def __init__(self):
-        self.fwlog=open("log.txt","w",0)
+        self.fwlog=open("./results/log.txt","w",0)
         self.fwlog.write( "timestepID Temp \t\tPE \t\t\tKE \n" )
-        self.fwXYZ=open("vmd.xyz","w",0)   
-        self.fwRdf=open("rdf.txt","w",0)  
-        self.fwAuto=open("autocorrelation.txt","w",0) 
+        self.fwXYZ=open("./results/vmd.xyz","w",0)   
+        self.fwRdf=open("./results/rdf.txt","w",0)  
+        self.fwAuto=open("./results/autocorrelation.txt","w",0) 
     def dump2log(self, freq):  
         if self.timestepID % freq==0:
             self.fwlog.write( "%5i \t %8.4f %e %e \n" % (self.timestepID, self.temperature(), self.potentialEnergy(), self.kineticEnergy()) )
@@ -55,14 +55,16 @@ class Analysis(object):
         for i in range(binNum):    
             self.fwRdf.write("%f %f \n" % ((i+0.5)*binWidth,  atom_counts[i]*(boxSize)**3/self.numAtoms/(4.0*PI*((i+0.5)*rbinWidth)**2*rbinWidth)/(self.numAtoms/2.0)  ))
                         
-    def velocityAutocorrelation(self, step):
+    def velocityAutocorrelation(self, freq):
         "autocorrelation t=0 at step"
-        if step == self.timestepID:
+        if self.autoVindex % freq== 0:
             self.atom0=deepcopy(self.atoms)
-        if step <= self.timestepID:  
-            v2=0
-            for atom in range(self.numAtoms):
-                v2 += self.atom0[atom].vx * self.atoms[atom].vx +\
-                      self.atom0[atom].vy * self.atoms[atom].vy +\
-                      self.atom0[atom].vz * self.atoms[atom].vz
-            self.fwAuto.write( "%5i %e \n" % (self.timestepID, v2/self.numAtoms))
+            self.autoVindex = 0
+            self.fwAuto.write("timestep %i, Frequency %i \n" % (self.timestepID,  freq))
+        self.autoVindex += 1
+        v2=0
+        for atom in range(self.numAtoms):
+            v2 += self.atom0[atom].vx * self.atoms[atom].vx +\
+                self.atom0[atom].vy * self.atoms[atom].vy +\
+                self.atom0[atom].vz * self.atoms[atom].vz
+        self.fwAuto.write( "%5i %e \n" % (self.autoVindex, v2/self.numAtoms))
